@@ -1,16 +1,44 @@
-import { StyleSheet } from 'react-native';
+import React, { useCallback, useMemo, useRef } from 'react';
+import { View, Text, StyleSheet ,Pressable,SafeAreaView,FlatList} from 'react-native';
+import BottomSheet,{BottomSheetFlatList} from '@gorhom/bottom-sheet';
+import Field from '../components/Field';
+import TeamStats from '../components/TeamStats';
+import PlayersList from '../components/PlayersList';
+import Filters from '../components/Filters';
+export default function TabOneScreen() {
+  const playersBottomSheet=useRef<BottomSheet>(null);
+  const filtersBottomSheet=useRef<BottomSheet>(null)
+  const viewPlayers=()=>{
+    playersBottomSheet.current?.expand()
+  }
 
-import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
-import { RootTabScreenProps } from '../types';
-
-export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
+  const snapPoints=[0,'50%']
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/TabOneScreen.tsx" />
-    </View>
+    <SafeAreaView style={styles.container}>
+       <TeamStats/>
+       <Field/>
+        <Pressable onPress={viewPlayers} style={styles.buttonContainer}>
+            <Text>View Players</Text>
+        </Pressable>
+        <BottomSheet
+        ref={playersBottomSheet}
+        index={0}
+        snapPoints={snapPoints}
+      >
+         <Pressable onPress={()=>filtersBottomSheet.current?.expand()} style={[styles.buttonContainer,{marginTop:10}]}>
+            <Text>Filters</Text>
+        </Pressable>
+        <View style={styles.contentContainer}>
+         <PlayersList/>
+        </View>
+      </BottomSheet>
+      <BottomSheet 
+      ref={filtersBottomSheet} 
+      index={0}
+      snapPoints={snapPoints}>
+         <Filters/> 
+      </BottomSheet>
+      </SafeAreaView>
   );
 }
 
@@ -18,15 +46,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor:"#72CC5e"
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  buttonContainer:{
+    backgroundColor:"orange",
+    width:'90%',
+    margin:20,
+    padding:10,
+    alignItems:"center",
+    borderRadius:50,
+    marginTop:'auto'
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  contentContainer: {
+    flex: 1,
+    alignItems: 'center',
   },
 });
